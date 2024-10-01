@@ -269,7 +269,7 @@ addButton.addEventListener("click", () => {
   newButton.appendChild(newItag);
 
   newButton.addEventListener("click", (e) => {
-    e.preventDefault();
+    e.preventDefault(); // 避免交出整个网页表单
     e.target.parentElement.parentElement.style.animation =
       "scaleDown 0.5s ease forwards";
     e.target.parentElement.parentElement.addEventListener(
@@ -316,4 +316,19 @@ addButton.addEventListener("click", () => {
   `;
 
   newForm.style.animation = "scaleUp 0.5s ease forwards";
+});
+
+let allTrash = document.querySelectorAll(".trash-button");
+allTrash.forEach((trash) => {
+  trash.addEventListener("click", (e) => {
+    e.target.parentElement.parentElement.classList.add("remove"); // Remove Animation
+  });
+});
+
+allTrash.forEach((trash) => {
+  let form = trash.parentElement.parentElement;
+  form.addEventListener("transitionend", (e) => {
+    e.target.remove();
+    setGPA();
+  });
 });
