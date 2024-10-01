@@ -345,7 +345,7 @@ btn2.addEventListener("click", () => {
 
 function handleSorting(direction) {
   let graders = document.querySelectorAll("div.grader");
-  let ObjectArray = [];
+  let objectArray = [];
 
   for (let i = 0; i < graders.length; i++) {
     let class_name = graders[i].children[0].value; // class category
@@ -355,7 +355,7 @@ function handleSorting(direction) {
     if (
       !(
         class_name == "" &&
-        lass_number == "" &&
+        class_number == "" &&
         class_credit == "" &&
         class_grade == ""
       )
@@ -366,12 +366,12 @@ function handleSorting(direction) {
         class_credit,
         class_grade,
       };
-      ObjectArray.push(class_Object);
+      objectArray.push(class_Object);
     }
   }
 
   // After get object array, we can change grade from String to number
-  for (let i = 0; i < ObjectArray.length; i++) {
+  for (let i = 0; i < objectArray.length; i++) {
     objectArray[i].class_grade_number = convertor(objectArray[i].class_grade);
   }
 
@@ -379,6 +379,82 @@ function handleSorting(direction) {
   if (direction == "descending") {
     objectArray = objectArray.reverse();
   }
+  // According to objectArray update the web
+  let allInputs = document.querySelector(".all-inputs");
+  allInputs.innerHTML = "";
+
+  for (let i = 0; i < objectArray.length; i++) {
+    allInputs.innerHTML += `<form>
+    <div class="grader">
+    <input type="text" placeholder="class category" class="class-type" list="opt" value="${objectArray[i].class_name}"/>
+    
+    <input type="text" placeholder="class number" class="class-number" value="${objectArray[i].class_number}"/>
+    
+    <input type="number" placeholder="credits" min="0" max="6" class="class-credit" value="${objectArray[i].class_credit}"/>
+    
+    <select name="select" class="select">
+    <option value=""></option>
+    <option value="A">A</option>
+    <option value="A-">A-</option>
+    <option value="B+">B+</option>
+    <option value="B">B</option>
+    <option value="B-">B-</option>
+    <option value="C+">C+</option>
+    <option value="C">C</option>
+    <option value="C-">C-</option>
+    <option value="D+">D+</option>
+    <option value="D">D</option>
+    <option value="D-">D-</option>
+    <option value="F">F</option>
+    </select>
+    
+    <button class="trash-button">
+    <i class="fas fa-trash"></i>
+    </button>
+    </div>
+    
+    </form>`;
+  }
+  // Can not update select use value in string , we use JS to update
+  graders = document.querySelectorAll("div.grader");
+  for (let i = 0; i < graders.length; i++) {
+    graders[i].children[3].value = objectArray[i].class_grade;
+  }
+
+  // SELECT EVENT LISTENER
+  let allSelects = document.querySelectorAll("select");
+  allSelects.forEach((select) => {
+    changeColor(select);
+    select.addEventListener("change", (e) => {
+      setGPA();
+      changeColor(e.target);
+    });
+  });
+
+  // CREDIT EVENT LISTENER
+  let allCredits = document.querySelectorAll(".class-credit");
+  allCredits.forEach((credit) => {
+    credit.addEventListener("change", () => {
+      setGPA();
+    });
+  });
+
+  // Trash Button Event Listener
+  let allTrash = document.querySelectorAll(".trash-button");
+  allTrash.forEach((trash) => {
+    trash.addEventListener("click", (e) => {
+      e.preventDefault(); // 避免交出整个网页表单
+      e.target.parentElement.parentElement.style.animation =
+        "scaleDown 0.5s ease forwards";
+      e.target.parentElement.parentElement.addEventListener(
+        "animationend",
+        (e) => {
+          e.target.remove();
+          setGPA();
+        }
+      );
+    });
+  });
 }
 // Sorting Algorithm
 function merge(a1, a2) {
@@ -416,8 +492,8 @@ function mergeSort(arr) {
     return arr;
   } else {
     let middle = Math.floor(arr.length / 2);
-    let left = arr.Slice(0, middle);
-    let right = arr.Slice(middle, arr.length);
+    let left = arr.slice(0, middle);
+    let right = arr.slice(middle, arr.length);
     return merge(mergeSort(left), mergeSort(right));
   }
 }
